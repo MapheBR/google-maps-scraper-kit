@@ -248,6 +248,33 @@ clearly abusive use.
 
 ---
 
+## Testing
+
+This project includes a test suite to ensure reliability as the codebase evolves.
+
+### Running Tests Locally
+
+```bash
+# Install development dependencies
+pip install -r requirements-dev.txt
+
+# Run all tests
+pytest scripts/test_scrape.py
+
+# Run with coverage report
+pytest scripts/test_scrape.py --cov=scrape --cov-report=term-missing
+```
+
+### CI/CD
+
+Tests run automatically on GitHub Actions for all pull requests and pushes to `main`/`master`. The pipeline validates against Python 3.9, 3.10, 3.11, and 3.12 with a coverage threshold of ≥80%.
+
+[![CI Status](https://github.com/Mahanaicoach/google-maps-scraper-kit/actions/workflows/test.yml/badge.svg)](https://github.com/Mahanaicoach/google-maps-scraper-kit/actions/workflows/test.yml)
+
+For detailed testing documentation, see [TESTING.md](TESTING.md).
+
+---
+
 ## Featured in
 
 - [Best Google Maps Scrapers on GitHub in 2026 (Tested)](https://scrap.io/google-maps-scraper-github-open-source-guide) by Scrap.io
