@@ -15,6 +15,7 @@ BBOX = ["30.0", "30.5", "-98.0", "-97.5"]  # Nominatim order: south, north, west
 
 
 class GridCells(unittest.TestCase):
+    """Tests for grid_cells() function - grid tiling logic for area-based scraping."""
     def test_count_centers_radius(self):
         cells = scrape.grid_cells(BBOX, 3)
         self.assertEqual(len(cells), 9)
@@ -39,6 +40,7 @@ class GridCells(unittest.TestCase):
 
 
 class Dedupe(unittest.TestCase):
+    """Tests for dedupe() function - duplicate removal logic."""
     def test_key_order(self):
         rows = [
             {"place_id": "P1", "cid": "C1", "title": "a"},
@@ -58,6 +60,7 @@ class Dedupe(unittest.TestCase):
 
 
 class InBbox(unittest.TestCase):
+    """Tests for in_bbox() function - geographic bounding box validation."""
     def test_margin_and_missing(self):
         self.assertTrue(scrape.in_bbox({"latitude": "30.2", "longitude": "-97.7"}, BBOX))
         self.assertTrue(scrape.in_bbox({"latitude": "30.54", "longitude": "-97.7"}, BBOX))   # inside 10%
@@ -69,6 +72,7 @@ class InBbox(unittest.TestCase):
 
 
 class ExtractEmails(unittest.TestCase):
+    """Tests for extract_emails() function - email address extraction from HTML."""
     def test_mailto_regex_junk_preference_cap(self):
         html = """
           <a href="mailto:Owner@Gmail.com?subject=Hi">Mail</a>
@@ -86,6 +90,7 @@ class ExtractEmails(unittest.TestCase):
 
 
 class ContactLinks(unittest.TestCase):
+    """Tests for _contact_links() function - contact page discovery logic."""
     def test_discovers_same_site_only(self):
         html = """<a href="/contact-us#form">Get in touch</a>
                   <a href="https://www.acme.com/team">About us</a>
@@ -120,6 +125,7 @@ CELL_ROWS = {"job-1": [_row("A"), _row("B"), _row("C")],
 
 
 class MockEngine(BaseHTTPRequestHandler):
+    """Mock HTTP server for testing the scraper API without network calls."""
     created, polls = 0, {}
 
     def log_message(self, *a):
@@ -154,6 +160,7 @@ class MockEngine(BaseHTTPRequestHandler):
 
 
 class EndToEnd(unittest.TestCase):
+    """End-to-end tests for the complete scrape workflow with mock engine."""
     def test_grid_run(self):
         srv = ThreadingHTTPServer(("127.0.0.1", 0), MockEngine)
         threading.Thread(target=srv.serve_forever, daemon=True).start()
@@ -180,6 +187,7 @@ class EndToEnd(unittest.TestCase):
 
 
 class HttpRequest(unittest.TestCase):
+    """Tests for req() function - HTTP request wrapper for API calls."""
     def test_get_request_success(self):
         mock_response = mock.Mock()
         mock_response.status = 200
@@ -232,6 +240,7 @@ class HttpRequest(unittest.TestCase):
 
 
 class Geocode(unittest.TestCase):
+    """Tests for geocode() function - Nominatim geocoding integration."""
     def test_geocode_success(self):
         mock_response = mock.Mock()
         mock_response.read.return_value = b'[{"lat": "30.2672", "lon": "-97.7431"}]'
@@ -273,6 +282,7 @@ class Geocode(unittest.TestCase):
 
 
 class EnrichSocials(unittest.TestCase):
+    """Tests for enrich_socials() function - social media profile discovery."""
     def test_socials_with_html_links(self):
         html = """
         <html>
@@ -333,6 +343,7 @@ class EnrichSocials(unittest.TestCase):
 
 
 class EnrichEmails(unittest.TestCase):
+    """Tests for enrich_emails() function - email address discovery from websites."""
     def test_emails_from_homepage(self):
         html = '<a href="mailto:info@acme.com">Contact</a>'
         results = [{"title": "Acme", "website": "https://acme.com", "emails": ""}]
@@ -381,6 +392,7 @@ class EnrichEmails(unittest.TestCase):
 
 
 class FullOutputMode(unittest.TestCase):
+    """Tests for --full output mode - raw field selection and validation."""
     def test_full_output_includes_all_fields(self):
         """Test that --full flag includes all raw fields from the engine."""
         # Mock a row with all typical raw fields (approximately 34 fields)
